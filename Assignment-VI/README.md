@@ -34,7 +34,7 @@ section .text
 
 _start: 
 
-xor    eax, eax      ; zero our eax
+xor    eax, eax      ; zero out eax
 push   eax
 
 ; push   0x68732f2f
