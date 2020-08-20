@@ -7,7 +7,7 @@ Polymorphism is the ability of an object to take on many forms. For pushing the 
 ### Challenge 1 : Analyzing Linux x86 execve("/bin/sh") - 28 bytes
 http://shell-storm.org/shellcode/files/shellcode-811.php
 
-This is an execve("/bin/sh") of 28 byte. Let's check the code.
+This is an execve("/bin/sh") of 28 byte. Let's check the assembly code.
 
 ```
 08048060 <_start>:
