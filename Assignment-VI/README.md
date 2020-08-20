@@ -96,4 +96,5 @@ int main()
   ```
 
 Compiling the shellcode using -z execstack ( gcc -fno-stack-protector -z execstack ) and run the shellcode file.
+
 The observed size of shellcode : 10 bytes
