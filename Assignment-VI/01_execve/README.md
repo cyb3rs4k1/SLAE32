@@ -42,7 +42,7 @@ push   eax
 ; push   0x68732f2f
 
 mov eax, 0xd0e65e5e
-ror eax, 1                       ; shift the register by 1 ro right
+ror eax, 1                       ; shift the register by 1 to right
 push eax
 
 ; push   0x6e69622f
